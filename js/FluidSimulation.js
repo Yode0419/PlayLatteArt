@@ -3,7 +3,11 @@ export class FluidSimulation {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
 
-    this.startSimulation();
+    this.isHeart = true; // 初始狀態為愛心
+    this.drawBackground();
+    this.drawHeart();
+
+    console.log("🎨 Fluid Simulation Initialized!");
   }
 
   /** 🖌️ 塗滿背景 */
@@ -12,45 +16,67 @@ export class FluidSimulation {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  /** 🎬 啟動流體模擬（未來可用來繪製動畫） */
-  startSimulation() {
-    console.log("🌊 Starting fluid simulation...");
-    this.drawBackground();
-    this.drawHeart(); // 繪製愛心
-  }
-
-  /** ❤️ 在畫布中央畫一顆愛心 */
+  /** ❤️ 畫愛心 */
   drawHeart() {
     const ctx = this.ctx;
     const x = this.canvas.width / 2;
-    const y = this.canvas.height / 2.8;
-    const size = 50; // 愛心大小
+    const y = this.canvas.height / 3.8;
+    const size = 50;
 
     ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.moveTo(x, y + size / 4);
-
-    // 左半邊
     ctx.bezierCurveTo(
-      x - size,
-      y - size / 2, // 控制點 1
-      x - size * 1.5,
-      y + size / 3, // 控制點 2
-      x,
-      y + size // 終點
-    );
-
-    // 右半邊
-    ctx.bezierCurveTo(
-      x + size * 1.5,
-      y + size / 3, // 控制點 3
       x + size,
-      y - size / 2, // 控制點 4
+      y - size,
+      x + 2.5 * size,
+      y + size / 2,
       x,
-      y + size / 4 // 回到起點
+      y + 2 * size
     );
-
+    ctx.bezierCurveTo(
+      x - 2.5 * size,
+      y + size / 2,
+      x - size,
+      y - size,
+      x,
+      y + size / 4
+    );
     ctx.fill();
-    console.log("❤️ Heart drawn!");
+  }
+
+  /** ⭐ 畫星星 */
+  drawStar() {
+    const ctx = this.ctx;
+    const x = this.canvas.width / 2;
+    const y = this.canvas.height / 2;
+    const size = 50;
+
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+      let angle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+      let outerX = x + Math.cos(angle) * size;
+      let outerY = y + Math.sin(angle) * size;
+      ctx.lineTo(outerX, outerY);
+
+      angle += Math.PI / 5;
+      let innerX = x + Math.cos(angle) * (size / 2);
+      let innerY = y + Math.sin(angle) * (size / 2);
+      ctx.lineTo(innerX, innerY);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  /** 🎬 切換圖案 */
+  toggleShape() {
+    this.drawBackground(); // 清除畫布
+    if (this.isHeart) {
+      this.drawStar();
+    } else {
+      this.drawHeart();
+    }
+    this.isHeart = !this.isHeart; // 切換狀態
   }
 }

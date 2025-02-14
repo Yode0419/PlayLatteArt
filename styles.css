@@ -52,9 +52,15 @@ button {
   box-shadow: 4px 4px 8px #b69c7d, -4px -4px 8px #e4c3a6; /* Neumorphism 按鈕 */
 }
 
+/* 💻 電腦 hover 效果 */
 button:hover {
   background-color: #b88665;
-  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 📱 手機點擊 (pressed) 效果 */
+button:active {
+  background-color: #a97050;
+  transform: scale(0.95); /* 按壓時縮小一點，提升按壓感 */
 }
 
 /* 🌟 響應式調整 */
