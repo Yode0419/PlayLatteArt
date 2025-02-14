@@ -6,35 +6,59 @@ const simulation = new FluidSimulation("fluidCanvas");
 // 添加視窗大小變化監聽
 simulation.addResizeListener();
 
-// 獲取按鈕元素
-const button = document.getElementById("testButton");
+// 獲取元素
+const canvas = document.getElementById("fluidCanvas");
+const instruction = document.getElementById("instruction");
+const restartButton = document.getElementById("restartButton");
 
-// 設置按鈕初始文字
-button.textContent = "按住倒牛奶 🥛";
-
-// 監聽按鈕事件
+// 控制變數
 let currentPhase = "pour";
 let isPouring = false;
 let pourTimer = null;
 let currentIndex = 0;
 
-// 按住按鈕開始倒奶
-button.addEventListener("mousedown", startPouring);
-button.addEventListener("touchstart", (e) => {
+// 更新提示文字
+function updateInstruction() {
+  switch (currentPhase) {
+    case "pour":
+      instruction.textContent = "🥛 按住咖啡杯倒牛奶 🥛";
+      restartButton.classList.add("hidden"); // 確保按鈕隱藏
+      break;
+    case "cocoa":
+      instruction.textContent = "🍫 點擊撒上可可粉 🍫";
+      restartButton.classList.add("hidden"); // 確保按鈕隱藏
+      break;
+    case "complete":
+      instruction.textContent = "❤️ 完成了好香！ ❤️";
+      restartButton.classList.remove("hidden"); // 只在完成時顯示按鈕
+      break;
+  }
+}
+
+// 監聽畫布事件
+canvas.addEventListener("mousedown", startPouring);
+canvas.addEventListener("touchstart", (e) => {
   e.preventDefault();
   startPouring();
 });
 
-// 放開按鈕停止倒奶
-button.addEventListener("mouseup", stopPouring);
-button.addEventListener("touchend", (e) => {
+canvas.addEventListener("mouseup", stopPouring);
+canvas.addEventListener("touchend", (e) => {
   e.preventDefault();
   stopPouring();
 });
 
-// 滑鼠/手指離開按鈕也要停止
-button.addEventListener("mouseleave", stopPouring);
-button.addEventListener("touchcancel", stopPouring);
+canvas.addEventListener("mouseleave", stopPouring);
+canvas.addEventListener("touchcancel", stopPouring);
+
+// 監聽重新開始按鈕
+restartButton.addEventListener("click", () => {
+  currentIndex = 0;
+  currentPhase = "pour";
+  simulation.drawImage(0);
+  restartButton.classList.add("hidden");
+  updateInstruction();
+});
 
 // 開始倒奶
 function startPouring() {
@@ -45,7 +69,7 @@ function startPouring() {
       currentIndex++;
       simulation.drawImage(currentIndex);
     }
-    // 設置定時器，每 300ms 切換一次圖片
+    // 設置定時器，每 500ms 切換一次圖片
     pourTimer = setInterval(() => {
       if (currentIndex < 10) {
         currentIndex++;
@@ -54,7 +78,17 @@ function startPouring() {
           stopPouring();
         }
       }
-    }, 300);
+    }, 500);
+  } else if (currentPhase === "cocoa") {
+    // 撒可可粉階段，每次點擊前進一張
+    if (currentIndex < 15) {
+      currentIndex++;
+      simulation.drawImage(currentIndex);
+      if (currentIndex >= 15) {
+        currentPhase = "complete";
+        updateInstruction();
+      }
+    }
   }
 }
 
@@ -69,22 +103,10 @@ function stopPouring() {
 
   if (currentPhase === "pour" && currentIndex >= 10) {
     currentPhase = "cocoa";
-    button.textContent = "撒上可可粉 🍫";
-  } else if (currentPhase === "cocoa") {
-    // 撒可可粉階段，每次點擊前進一張
-    if (currentIndex < 15) {
-      currentIndex++;
-      simulation.drawImage(currentIndex);
-      if (currentIndex >= 15) {
-        currentPhase = "restart";
-        button.textContent = "再拉一次 ❤️";
-      }
-    }
-  } else if (currentPhase === "restart") {
-    // 重新開始
-    currentIndex = 0;
-    currentPhase = "pour";
-    simulation.drawImage(currentIndex);
-    button.textContent = "按住倒牛奶 🥛";
+    updateInstruction();
+    restartButton.classList.add("hidden"); // 確保按鈕隱藏
   }
 }
+
+// 初始化提示文字
+updateInstruction();
