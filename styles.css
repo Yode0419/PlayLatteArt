@@ -34,7 +34,7 @@ h1 {
 
 /* 🎨 畫布容器：保持正方形 */
 #canvas-container {
-  width: min(80vw, 500px);
+  width: min(80vmin, 500px);
   aspect-ratio: 1;
   margin: 0 auto;
   border-radius: 50%;
@@ -100,14 +100,14 @@ h1 {
 /* 🎯 響應式調整 */
 @media screen and (min-width: 1200px) {
   #canvas-container {
-    width: min(45vw, 450px);
+    width: min(45vmin, 450px);
     border-width: 20px;
   }
 }
 
 @media screen and (min-width: 769px) and (max-width: 1199px) {
   #canvas-container {
-    width: min(55vw, 450px);
+    width: min(55vmin, 450px);
     border-width: 20px;
   }
 }
@@ -122,7 +122,7 @@ h1 {
   }
 
   #canvas-container {
-    width: min(80vw, 400px);
+    width: min(80vmin, 400px);
     border-width: 18px;
   }
 
@@ -147,7 +147,7 @@ h1 {
   }
 
   #canvas-container {
-    width: min(80vw, 350px);
+    width: min(80vmin, 350px);
     border-width: 15px;
   }
 
