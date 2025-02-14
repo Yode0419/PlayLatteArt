@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,10 +9,16 @@
   <body>
     <h1>Welcome to PlayLatteArt ☕</h1>
     <p>Start creating your latte art simulation!</p>
-    <p>This is an updated line.🎨</p>
 
-    <button onclick="showAlert()">Click me</button>
+    <!-- 畫布容器 -->
+    <div id="canvas-container">
+      <canvas id="fluidCanvas"></canvas>
+    </div>
 
-    <script src="script.js"></script>
+    <!-- 測試按鈕 -->
+    <button id="testButton">Click me</button>
+
+    <!-- 引入 JavaScript -->
+    <script type="module" src="main.js"></script>
   </body>
 </html>

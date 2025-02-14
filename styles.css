@@ -1,19 +1,71 @@
+/* 🌟 全局樣式 */
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  background-color: #f3f3f3;
+  background-color: #f8f5f2;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }
 
+/* 🌟 標題樣式 */
+h1 {
+  font-size: 2rem;
+  margin-top: 20px;
+}
+
+/* 🎨 畫布容器：保持正方形 */
+#canvas-container {
+  width: 80vw; /* 根據視窗大小縮放 */
+  max-width: 500px; /* 最大寬度 */
+  aspect-ratio: 1 / 1; /* 確保是正方形 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto;
+  border-radius: 50%; /* 讓容器也是圓形 */
+  overflow: hidden; /* 避免內容溢出 */
+}
+
+/* 🎨 畫布：變成圓形 */
+#fluidCanvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%; /* 讓畫布變成圓形 */
+}
+
+/* 🌟 按鈕樣式 */
 button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #d4a373;
+  margin-top: 20px;
+  background-color: #d2a679;
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 4px 4px 8px #b69c7d, -4px -4px 8px #e4c3a6; /* Neumorphism 按鈕 */
 }
 
 button:hover {
-  background-color: #b5835a;
+  background-color: #b88665;
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 🌟 響應式調整 */
+@media (max-width: 768px) {
+  .canvas-container {
+    width: 90vw;
+    height: 40vh;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
 }
