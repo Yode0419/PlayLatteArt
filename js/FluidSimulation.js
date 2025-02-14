@@ -6,7 +6,7 @@ export class FluidSimulation {
     this.fadeSpeed = 0.02;
     this.currentImage = null;
     this.isTransitioning = false;
-    this.imageCache = new Map(); // 用於存儲預加載的圖片
+    this.imageCache = new Map();
 
     this.setCanvasSize();
     this.drawBackground();
@@ -20,7 +20,6 @@ export class FluidSimulation {
 
   /** 預加載所有圖片 */
   async preloadImages() {
-    // 假設有16張圖片 (0-15)
     const totalImages = 16;
     for (let i = 0; i < totalImages; i++) {
       await this.loadImage(i);
@@ -68,13 +67,11 @@ export class FluidSimulation {
     const displayWidth = this.canvas.width / (window.devicePixelRatio || 1);
     const displayHeight = this.canvas.height / (window.devicePixelRatio || 1);
 
-    // 計算縮放比例
     const scale = Math.min(
       displayWidth / img.width,
       displayHeight / img.height
     );
 
-    // 計算尺寸和位置
     const drawWidth = img.width * scale;
     const drawHeight = img.height * scale;
     const offsetX = (displayWidth - drawWidth) / 2;
@@ -82,9 +79,7 @@ export class FluidSimulation {
 
     this.ctx.save();
 
-    // 繪製背景
     if (this.currentImage && opacity < 1) {
-      // 先繪製當前圖片
       this.ctx.globalAlpha = 1;
       this.ctx.drawImage(
         this.currentImage,
@@ -97,7 +92,6 @@ export class FluidSimulation {
       this.drawBackground();
     }
 
-    // 繪製新圖片
     this.ctx.globalAlpha = opacity;
     this.ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
@@ -115,11 +109,9 @@ export class FluidSimulation {
     }
 
     if (!this.currentImage) {
-      // 第一次加載，直接顯示
       this.currentImage = img;
       this.drawImageToCanvas(img);
     } else {
-      // 淡入新圖片
       this.isTransitioning = true;
       let opacity = 0;
 
