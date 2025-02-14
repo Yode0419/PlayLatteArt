@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const button = document.querySelector("button");
 
   const fluidSim = new FluidSimulation(canvasId);
-  let currentIndex = 0;
+  let currentIndex = 1;
   const totalImages = 16;
 
   /** 🔄 切換圖片並更新按鈕文字 */

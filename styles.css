@@ -4,82 +4,160 @@ body {
   text-align: center;
   background-color: #f8f5f2;
   margin: 0;
-  padding: 0;
+  padding: 20px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
 }
 
 /* 🌟 標題樣式 */
 h1 {
   font-size: 2rem;
   margin-top: 20px;
+  padding: 0 20px;
 }
 
 /* 🎨 畫布容器：保持正方形 */
 #canvas-container {
-  width: 80vw; /* 根據視窗大小縮放 */
-  max-width: 500px; /* 最大寬度 */
-  aspect-ratio: 1 / 1; /* 確保是正方形 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  width: min(80vw, 500px); /* 使用 min 函數確保最大寬度 */
+  aspect-ratio: 1;
   margin: 20px auto;
-  border-radius: 50%; /* 讓容器也是圓形 */
-  overflow: hidden; /* 避免內容溢出 */
+  border-radius: 50%;
+  overflow: hidden;
   border: 20px solid #fff;
+
+  /* 柔和的陰影效果 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1),
+    /* 外層柔和陰影 */ 0 5px 15px rgba(0, 0, 0, 0.07),
+    /* 中層陰影 */ inset 0 -3px 10px rgba(0, 0, 0, 0.05); /* 內層細微陰影 */
+
+  /* 防止 iOS 上的變形 */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* 🎨 畫布：變成圓形 */
 #fluidCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%; /* 讓畫布變成圓形 */
-  /* border: 20px solid #fff; */
+  border-radius: 50%;
+  touch-action: none; /* 防止 iOS 上的觸控問題 */
 }
 
 /* 🌟 按鈕樣式 */
 button {
-  margin-top: 20px;
+  width: 50%; /* 設為畫布的一半寬 */
+  margin: 20px auto;
   background-color: #cb7f53;
   color: white;
   border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 10px;
+  padding: 15px 0; /* 增加上下內距 */
+  font-size: 18px; /* 放大字體 */
+  border-radius: 15px; /* 增加圓角 */
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  box-shadow: 4px 4px 8px #b69c7d, -4px -4px 8px #e4c3a6; /* Neumorphism 按鈕 */
-}
-
-button {
+  box-shadow: 4px 4px 8px #b69c7d, -4px -4px 8px #e4c3a6;
   outline: none;
-  -webkit-tap-highlight-color: transparent; /* 移除點擊高亮 */
+  -webkit-tap-highlight-color: transparent;
+  display: block; /* 確保寬度生效 */
 }
 
 /* 💻 電腦 hover 效果 */
-button:hover {
-  background-color: #b88665;
+@media (hover: hover) {
+  button:hover {
+    background-color: #b88665;
+  }
+
+  /* 滑鼠點擊效果 */
+  button:active {
+    background-color: #a97050;
+    transform: scale(0.95);
+  }
 }
 
-/* 📱 手機點擊 (pressed) 效果 */
+/* 📱 手機點擊效果 */
 button:active {
   background-color: #a97050;
-  transform: scale(0.95); /* 按壓時縮小一點，提升按壓感 */
+  transform: scale(0.95);
 }
 
 /* 🎯 響應式調整 */
-@media (max-width: 768px) {
-  .canvas-container {
-    width: min(90vw, 400px); /* 限制最大寬度，但在小螢幕可縮小 */
-    max-width: 400px;
-    aspect-ratio: 1 / 1; /* 確保仍然是正方形 */
+/* 大型螢幕 */
+@media screen and (min-width: 1200px) {
+  #canvas-container {
+    width: min(45vw, 450px); /* 縮小最大寬度 */
+    border-width: 20px; /* 稍微減少邊框寬度 */
+  }
+}
+
+/* 中型螢幕 */
+@media screen and (min-width: 769px) and (max-width: 1199px) {
+  #canvas-container {
+    width: min(55vw, 450px); /* 調整為更合適的尺寸 */
+    border-width: 20px;
+  }
+}
+
+/* 平板 */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.7rem;
+  }
+
+  #canvas-container {
+    width: min(80vw, 400px);
+    border-width: 18px;
   }
 
   button {
-    padding: 12px 24px;
-    font-size: 14px;
+    padding: 14px 0;
+    font-size: 17px;
+  }
+}
+
+/* 手機 */
+@media screen and (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  #canvas-container {
+    width: min(85vw, 350px);
+    border-width: 15px;
+  }
+
+  button {
+    padding: 12px 0;
+    font-size: 16px;
+  }
+}
+
+/* 超小螢幕 */
+@media screen and (max-width: 320px) {
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  #canvas-container {
+    width: 90vw;
+    border-width: 12px;
+  }
+
+  button {
+    padding: 10px 0;
+    font-size: 15px;
   }
 }

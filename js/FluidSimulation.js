@@ -2,29 +2,53 @@ export class FluidSimulation {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
+    this.currentOpacity = 1;
+    this.fadeSpeed = 0.02;
+    this.currentImage = null;
+    this.isTransitioning = false;
+    this.imageCache = new Map(); // 用於存儲預加載的圖片
 
     this.setCanvasSize();
     this.drawBackground();
-    console.log("🎨 Fluid Simulation Initialized!");
+
+    // 預加載所有圖片
+    this.preloadImages().then(() => {
+      this.drawImage(0);
+      console.log("🎨 Fluid Simulation Initialized!");
+    });
+  }
+
+  /** 預加載所有圖片 */
+  async preloadImages() {
+    // 假設有16張圖片 (0-15)
+    const totalImages = 16;
+    for (let i = 0; i < totalImages; i++) {
+      await this.loadImage(i);
+    }
+  }
+
+  /** 加載單張圖片 */
+  loadImage(index) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        this.imageCache.set(index, img);
+        resolve(img);
+      };
+      img.src = `assets/img${String(index).padStart(2, "0")}.png`;
+    });
   }
 
   /** 🎨 設置 Canvas 尺寸，支援高解析度 */
   setCanvasSize() {
     const scale = window.devicePixelRatio || 1;
-
-    // 獲取容器的實際大小
     const displayWidth = this.canvas.clientWidth;
     const displayHeight = this.canvas.clientHeight;
 
-    // 設置畫布的緩衝區大小
     this.canvas.width = displayWidth * scale;
     this.canvas.height = displayHeight * scale;
-
-    // 設置畫布的顯示大小
     this.canvas.style.width = `${displayWidth}px`;
     this.canvas.style.height = `${displayHeight}px`;
-
-    // 調整繪圖環境比例
     this.ctx.scale(scale, scale);
   }
 
@@ -39,34 +63,86 @@ export class FluidSimulation {
     );
   }
 
-  /** 🖼️ 顯示圖片，確保居中並填滿畫布 */
-  drawImage(index) {
-    const img = new Image();
-    img.onload = () => {
-      // 清除畫布並重繪背景
-      const displayWidth = this.canvas.width / (window.devicePixelRatio || 1);
-      const displayHeight = this.canvas.height / (window.devicePixelRatio || 1);
+  /** 🎨 繪製圖片 */
+  drawImageToCanvas(img, opacity = 1) {
+    const displayWidth = this.canvas.width / (window.devicePixelRatio || 1);
+    const displayHeight = this.canvas.height / (window.devicePixelRatio || 1);
 
-      this.ctx.clearRect(0, 0, displayWidth, displayHeight);
-      this.drawBackground();
+    // 計算縮放比例
+    const scale = Math.min(
+      displayWidth / img.width,
+      displayHeight / img.height
+    );
 
-      // 計算縮放比例（保持圖片比例）
-      const scale = Math.min(
-        (displayWidth * 1) / img.width,
-        (displayHeight * 1) / img.height
+    // 計算尺寸和位置
+    const drawWidth = img.width * scale;
+    const drawHeight = img.height * scale;
+    const offsetX = (displayWidth - drawWidth) / 2;
+    const offsetY = (displayHeight - drawHeight) / 2;
+
+    this.ctx.save();
+
+    // 繪製背景
+    if (this.currentImage && opacity < 1) {
+      // 先繪製當前圖片
+      this.ctx.globalAlpha = 1;
+      this.ctx.drawImage(
+        this.currentImage,
+        offsetX,
+        offsetY,
+        drawWidth,
+        drawHeight
       );
+    } else {
+      this.drawBackground();
+    }
 
-      // 計算縮放後的尺寸
-      const drawWidth = img.width * scale;
-      const drawHeight = img.height * scale;
+    // 繪製新圖片
+    this.ctx.globalAlpha = opacity;
+    this.ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
 
-      // 計算置中位置
-      const offsetX = (displayWidth - drawWidth) / 2;
-      const offsetY = (displayHeight - drawHeight) / 2;
+    this.ctx.restore();
+  }
 
-      // 繪製圖片
-      this.ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    };
-    img.src = `assets/img${String(index).padStart(2, "0")}.png`;
+  /** 🖼️ 顯示圖片 */
+  async drawImage(index) {
+    if (this.isTransitioning) return;
+
+    const img = this.imageCache.get(index);
+    if (!img) {
+      console.warn(`Image ${index} not found in cache`);
+      return;
+    }
+
+    if (!this.currentImage) {
+      // 第一次加載，直接顯示
+      this.currentImage = img;
+      this.drawImageToCanvas(img);
+    } else {
+      // 淡入新圖片
+      this.isTransitioning = true;
+      let opacity = 0;
+
+      while (opacity < 1) {
+        opacity += this.fadeSpeed;
+        if (opacity > 1) opacity = 1;
+
+        this.drawImageToCanvas(img, opacity);
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+
+      this.currentImage = img;
+      this.isTransitioning = false;
+    }
+  }
+
+  /** 🔄 監聽視窗大小變化 */
+  addResizeListener() {
+    window.addEventListener("resize", () => {
+      this.setCanvasSize();
+      if (this.currentImage) {
+        this.drawImageToCanvas(this.currentImage);
+      }
+    });
   }
 }
